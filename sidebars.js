@@ -82,12 +82,9 @@ const sidebars = {
         label: 'Devices and Commands',
         items: [
           'dev-guide/cookbook/devices-and-commands/intro',
-          'dev-guide/cookbook/devices-and-commands/device-configurations',
-          'dev-guide/cookbook/devices-and-commands/scalar-command',
-          'dev-guide/cookbook/devices-and-commands/linear-command',
-          'dev-guide/cookbook/devices-and-commands/rotate-command',
-          'dev-guide/cookbook/devices-and-commands/sensor-commands',
-          'dev-guide/cookbook/devices-and-commands/raw-commands',
+          'dev-guide/cookbook/devices-and-commands/actuators',
+          'dev-guide/cookbook/devices-and-commands/sensors',
+          'dev-guide/cookbook/devices-and-commands/device-configurations'
         ]
       },
       {
