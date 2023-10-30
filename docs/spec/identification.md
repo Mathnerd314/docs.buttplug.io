@@ -42,7 +42,7 @@ sequenceDiagram
     "RequestServerInfo": {
       "Id": 1,
       "ClientName": "Test Client",
-      "MessageVersion": 1
+      "MessageVersion": 4
     }
   }
 ]
@@ -87,7 +87,7 @@ sequenceDiagram
     "ServerInfo": {
       "Id": 1,
       "ServerName": "Test Server",
-      "MessageVersion": 1,
+      "MessageVersion": 4,
       "MaxPingTime": 100
     }
   }

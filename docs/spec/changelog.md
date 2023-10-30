@@ -1,5 +1,13 @@
 # Spec Changelog
 
+## Version 4 (2023-07-04)
+
+- Messages Changed:
+  - DeviceList/DeviceAdded
+    - Moved from message definitions to per-actuator/sensor definitions
+    - Fixed issues with indexes of actuators
+    - Fixed issues with indexes of sensors in relation to their capabilities (read/subscribe)
+
 ## Version 3 Patch 3 (2022-12-30)
 
 - Message Definitions Fixed:

@@ -173,31 +173,30 @@ sequenceDiagram
 
 **Introduced In Spec Version:** 0
 
-**Last Updated In Spec Version:** 3 (See [Deprecated Messages](deprecated.md) for older versions.)
+**Last Updated In Spec Version:** 4 (See [Deprecated Messages](deprecated.md) for older versions.)
 
 **Fields:**
 
 * _Id_ (unsigned int): Message Id
 * _Devices_ (array): Array of device objects
-  * _DeviceName_ (string): Descriptive name of the device, as taken from the base device
+  * _Name_ (string): Descriptive name of the device, as taken from the base device
     configuration file.
-  * _DeviceIndex_ (unsigned integer): Index used to identify the device when sending Device
+  * _Index_ (unsigned integer): Index used to identify the device when sending Device
     Messages.
-  * _DeviceMessageTimingGap_ (_optional_, unsigned integer): Recommended minimum gap between device
+  * _MessageTimingGap_ (_optional_, unsigned integer): Recommended minimum gap between device
     commands, in milliseconds. This is only a recommendation, and will not be enforced on the
     server, as most times the server does not actually know the exact message gap timing required
     (hence this being recommended). Enforcement on the client (with developer option to disable) is
     encouraged. Optional field, not required to be included in message. Missing value should be
     assumed that server does not know recommended message gap.
-  * _DeviceDisplayName_ (_optional_, string): User provided display name for a device. Useful for
+  * _DisplayName_ (_optional_, string): User provided display name for a device. Useful for
     cases where a users may have multiple of the same device connected. Optional field, not required
     to be included in message. Missing value means that no device display name is set, and device
     name should be used.
-  * _DeviceMessages_ (dictionary): Accepted Device Messages 
-    * Keys (string): Type names of Device Messages that the device will accept
-    * Values (Array of [Message
-      Attributes](enumeration.md#message-attributes-for-devicelist-and-deviceadded)):
-      Attributes for the Device Messages. Each feature is a seperate array element, and its index in the array matches how it should be addressed in generic command messages. For instance, in the example below, the Clitoral Stimulator would be Actuator Index 0 in ScalarCmd.
+  * _Actuators_ (array of [Actuator Attributes]): A list of actuators, including their descriptions
+    and messages they can take. Each actuator represents a different output of the hardware it is describing (vibrators, stroking axes, etc...).
+  * _Sensors_ (array of [Sensor Attributes]): A list of sensors, including their descriptions and
+    messages they can take. Each sensor represents a different input of the hardware it is describing (battery level, pressure sensors, etc...).
 
 **Expected Response:**
 
@@ -220,37 +219,90 @@ sequenceDiagram
       "Id": 1,
       "Devices": [
         {
-          "DeviceName": "Test Vibrator",
-          "DeviceIndex": 0,
-          "DeviceMessages": {
-            "ScalarCmd": [
-              {
-                "StepCount": 20,
-                "FeatureDescriptor": "Clitoral Stimulator",
-                "ActuatorType": "Vibrate"
-              },
-              {
-                "StepCount": 20,
-                "FeatureDescriptor": "Insertable Vibrator",
-                "ActuatorType": "Vibrate"
-              }
-            ],
-            "StopDeviceCmd": {}
-          }
+          "Name": "Test Vibrator",
+          "Index": 0,
+          "MessageTimingGap": 100,
+          "DisplayName": "Rabbit Vibrator",
+          "Actuators": [
+            {
+              "Index": 0,
+              "Descriptor": "Clitoral Vibrator",
+              "Messages": [
+                {
+                  "Type": "ScalarCmd",
+                  "StepCount": 20,
+                  "ActuatorType": "Vibrate"
+                },
+              ]
+            },
+            {
+              "Index": 1,
+              "Descriptor": "Insertable Vibrator",
+              "Messages": [
+                {
+                  "Type": "ScalarCmd",
+                  "StepCount": 20,
+                  "ActuatorType": "Vibrate"
+                }
+              ]
+            }
+          ],
+          "Sensors": [
+            {
+              "Index": 0,
+              "FeatureDescriptor": "Battery",
+              "Range": [0, 100],
+              "Type": "Battery",
+              "Readable": true,
+              "Subscribable": false
+            }
+          ]
         },
         {
-          "DeviceName": "Test Stroker",
-          "DeviceIndex": 1,
-          "DeviceMessageTimingGap": 100,
-          "DeviceDisplayName": "User set name",
-          "DeviceMessages": {
-            "LinearCmd": [ {
-              "StepCount": 100,
+          "Name": "Test Stroker",
+          "Index": 1,
+          "MessageTimingGap": 100,
+          "DisplayName": "User set name",
+          "Actuators": [
+            {
+              "Index": 0,
               "FeatureDescriptor": "Stroker",
-              "ActuatorType": "Linear"
-            } ],
-            "StopDeviceCmd": {}
-          }
+              "FeatureMessages": [
+                {
+                  "Type": "LinearCmd",
+                  "StepCount": 100,
+                },
+                {
+                  "Type": "ScalarCmd",
+                  "ActuatorType": "Oscillate",
+                  "StepCount": 10,
+                },
+              ]
+            },
+          ],
+        },
+        {
+          "Name": "Test Kegel Pressure Sensor",
+          "Index": 1,
+          "DisplayName": "User set name",
+          "Sensors": [
+            {
+              "Index": 0,
+              "Descriptor": "Pressure Sensor (Calibrated)",
+              "Range": [0, 1000],
+              "Type": "Pressure",
+              "Readable": false,
+              "Subscribable": true
+            },
+            {
+              "Index": 1,
+              "Descriptor": "Pressure Sensor (Raw)",
+              "Range": [0, 1000],
+              "Type": "Pressure",
+              "Readable": false,
+              "Subscribable": true
+            },
+          ],
         }
       ]
     }
@@ -268,28 +320,29 @@ scanning/discovery sessions.
 
 **Introduced In Spec Version:** 0
 
-**Last Updated In Spec Version**: 3 (See [Deprecated Messages](deprecated.md) for older versions.)
+**Last Updated In Spec Version**: 4 (See [Deprecated Messages](deprecated.md) for older versions.)
 
 **Fields:**
 
 * _Id_ (unsigned int): Message Id
-* _DeviceName_ (string): Descriptive name of the device, as taken from the base device
+* _Name_ (string): Descriptive name of the device, as taken from the base device
   configuration file.
-* _DeviceIndex_ (unsigned integer): Index used to identify the device when sending Device Messages.
-* _DeviceMessageTimingGap_ (_optional_, unsigned integer): Recommended minimum gap between device
+* _Index_ (unsigned integer): Index used to identify the device when sending Device Messages.
+* _MessageTimingGap_ (_optional_, unsigned integer): Recommended minimum gap between device
   commands, in milliseconds. This is only a recommendation, and will not be enforced on the
   server, as most times the server does not actually know the exact message gap timing required
   (hence this being recommended). Enforcement on the client (with developer option to disable) is
   encouraged. Optional field, not required to be included in message. Missing value should be assumed that server does not know recommended message gap.
-* _DeviceDisplayName_ (_optional_, string): User provided display name for a device. Useful for
+* _DisplayName_ (_optional_, string): User provided display name for a device. Useful for
   cases where a users may have multiple of the same device connected. Optional field, not required
   to be included in message. Missing value means that no device display name is set, and device
   name should be used.
-* _DeviceMessages_ (dictionary): Accepted Device Messages 
-  * Keys (string): Type names of Device Messages that the device will accept
-  * Values (Array of [Message
-    Attributes](enumeration.md#message-attributes-for-devicelist-and-deviceadded)): Attributes for
-    the Device Messages. Each feature is a seperate array element, and its index in the array matches how it should be addressed in generic command messages. For instance, in the example below, the Clitoral Stimulator would be Actuator Index 0 in ScalarCmd.
+* _Actuators_ (array of [Actuator Attributes]): A list of actuators, including their descriptions
+  and messages they can take. Each actuator represents a different output of the hardware it is
+  describing (vibrators, stroking axes, etc...).
+* _Sensors_ (array of [Sensor Attributes]): A list of sensors, including their descriptions and
+  messages they can take. Each sensor represents a different input of the hardware it is describing
+  (battery level, pressure sensors, etc...). 
 
 **Expected Response:**
 
@@ -311,25 +364,34 @@ sequenceDiagram
   {
     "DeviceAdded": {
       "Id": 0,
-      "DeviceName": "Test Vibrator",
-      "DeviceIndex": 0,
-      "DeviceMessageTimingGap": 100,
-      "DeviceDisplayName": "Rabbit Vibrator",
-      "DeviceMessages": {
-        "ScalarCmd": [
-          {
-            "StepCount": 20,
-            "FeatureDescriptor": "Clitoral Stimulator",
-            "ActuatorType": "Vibrate"
-          },
-          {
-            "StepCount": 20,
-            "FeatureDescriptor": "Insertable Vibrator",
-            "ActuatorType": "Vibrate"
-          }
-        ],
-        "StopDeviceCmd": {}
-       }
+      "Name": "Test Vibrator",
+      "Index": 0,
+      "MessageTimingGap": 100,
+      "DisplayName": "Rabbit Vibrator",
+      "Actuators": [
+        {
+          "Index": 0,
+          "Descriptor": "Clitoral Vibrator",
+          "Messages": [
+            {
+              "Type": "ScalarCmd",
+              "StepCount": 20,
+              "ActuatorType": "Vibrate"
+            },
+          ]
+        },
+        {
+          "Index": 1,
+          "Descriptor": "Insertable Vibrator",
+          "Messages": [
+            {
+              "Type": "ScalarCmd",
+              "StepCount": 20,
+              "ActuatorType": "Vibrate"
+            }
+          ]
+        }
+      ],
     }
   }
 ]
@@ -345,11 +407,11 @@ Messages on all Devices; in these cases the attributes will not be included.
 
 **Introduced In Spec Version:** 1
 
-**Last Updated In Spec Version**: 3 (See [Deprecated Messages](deprecated.md) for older versions.)
+**Last Updated In Spec Version**: 4 (See [Deprecated Messages](deprecated.md) for older versions.)
 
 **Attributes:**
 
-* _FeatureDescriptor_
+* _Descriptor_
   * Valid for Messages: ScalarCmd, RotateCmd, LinearCmd, SensorReadCmd
   * Type: String
   * Description: Text descriptor for a feature.
